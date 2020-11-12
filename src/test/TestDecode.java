@@ -1,3 +1,4 @@
+package test;
 public class TestDecode {
 	public static void main(String[] args) {
 		String o = "016", 
