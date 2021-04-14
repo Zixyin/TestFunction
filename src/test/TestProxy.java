@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * 业务接口
  * @author yinzixian
- *
+ * https://github.com/YinZiXian/TestFunction/blob/master/src/test/TestProxy.java
  */
 
 interface ProxyService {
