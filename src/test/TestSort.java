@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 /**
  * @author YZX
@@ -6,7 +6,7 @@ package yzx.cn.test;
  * @time ионГ10:27:39
  */
 
-public class sort {
+public class TestSort {
 
 	//ц╟ещеепР
 	public static int[] bubbleSort(int[] array) {

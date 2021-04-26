@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 /**
  * @author YZX
@@ -6,7 +6,7 @@ package yzx.cn.test;
  * @time ÏÂÎç4:57:37
  */
 
-public class Testinteger {
+public class TestInteger {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

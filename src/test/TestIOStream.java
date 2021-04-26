@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,7 @@ import java.nio.channels.FileChannel;
  * @time 上午9:02:15
  */
 
-public class IOStream {
+public class TestIOStream {
 	public static void copyFileUseNIO(String src, String dst) throws IOException {
 		// 声明源文件和目标文件
 		FileInputStream fi = new FileInputStream(new File(src));

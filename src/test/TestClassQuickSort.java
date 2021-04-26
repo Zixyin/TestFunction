@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 /**
  * @author YZX
@@ -6,7 +6,7 @@ package yzx.cn.test;
  * @time ионГ8:50:39
  */
 
-public class ClassQuickSort {
+public class TestClassQuickSort {
 
 	public static void main(String[] args) {
 		int[] a  = new int[] {1,2,5,2,6,7,5,3,34,8};

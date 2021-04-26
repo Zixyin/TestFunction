@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 /**
  * @author YZX

@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 /**
  * @author YZX
@@ -11,7 +11,7 @@ package yzx.cn.test;
  * 通过Class类的静态方法：forName（String className）(常用)
  * 
  */
-public class Fanshe {
+public class TestReflect {
 	public static void main(String[] args) {
 		// 第一种方式获取Class对象
 		Student stu1 = new Student();// 这一new 产生一个Student对象，一个Class对象。

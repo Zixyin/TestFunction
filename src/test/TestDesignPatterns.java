@@ -1,4 +1,4 @@
-package yzx.cn.test;
+package test;
 
 /**
  * @author YZX
@@ -6,9 +6,9 @@ package yzx.cn.test;
  * @time ÏÂÎç8:22:59
  */
 
-public class DesignPatterns {
+public class TestDesignPatterns {
 
-	public DesignPatterns() {
+	public TestDesignPatterns() {
 		
 	}
 	
