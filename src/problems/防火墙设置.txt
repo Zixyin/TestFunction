@@ -1,0 +1,27 @@
+
+开启防火墙
+	systemctl start firewalld
+关闭防火墙
+	systemctl stop firewalld
+使用firewall-cmd配置端口
+
+（1）查看防火墙状态：firewall-cmd --state
+
+（2）重新加载配置：firewall-cmd --reload
+
+（3）查看开放的端口：firewall-cmd --list-ports
+
+（4）开启防火墙端口：firewall-cmd --zone=public --add-port=9200/tcp --permanent
+
+　　命令含义：
+
+　　–zone #作用域
+
+　　–add-port=9200/tcp #添加端口，格式为：端口/通讯协议
+
+　　–permanent #永久生效，没有此参数重启后失效
+
+　　注意：添加端口后，必须用命令firewall-cmd --reload重新加载一遍才会生效
+
+（5）关闭防火墙端口：firewall-cmd --zone=public --remove-port=9200/tcp --permanent
+

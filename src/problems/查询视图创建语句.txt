@@ -1,0 +1,11 @@
+SELECT
+REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+SUBSTRING_INDEX(LOAD_FILE('C:\\Users\\Loki\\Downloads\\mysql-5.6.17-winx64\\data\\course\\v.frm'),
+'\nsource=',-1),
+'\\_','\_'), '\\%','\%'), '\\\\','\\'), '\\Z','\Z'), '\\t','\t'),
+'\\r','\r'), '\\n','\n'), '\\b','\b'), '\\\"','\"'), '\\\'','\''),
+'\\0','\0')
+AS source;
+
+show global variables like "%datadir%";
