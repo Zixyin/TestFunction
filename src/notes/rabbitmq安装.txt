@@ -1,0 +1,104 @@
+一、安装erlang 
+https://github.com/rabbitmq/erlang-rpm
+
+1.vi /etc/yum.repos.d/rabbitmq_erlang.repo
+
+[rabbitmq_erlang]
+name=rabbitmq_erlang
+baseurl=https://packagecloud.io/rabbitmq/erlang/el/6/$basearch
+repo_gpgcheck=1
+gpgcheck=0
+enabled=1
+gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
+ 
+[rabbitmq_erlang-source]
+name=rabbitmq_erlang-source
+baseurl=https://packagecloud.io/rabbitmq/erlang/el/6/SRPMS
+repo_gpgcheck=1
+gpgcheck=0
+enabled=1
+gpgkey=https://packagecloud.io/rabbitmq/erlang/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
+
+2.yum install erlang
+	
+Erlang安装完成！
+
+二、安装rabbitmq
+
+下载 rpm 包：https://www.rabbitmq.com/install-rpm.html#downloads
+
+官方最新对应版本：https://www.rabbitmq.com/which-erlang.html
+
+rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+
+rpm -ivh --nodeps rabbitmq-server-3.8.12-1.el7.noarch.rpm
+
+	
+三、启动RabbitMQ
+
+1.配置为守护进程随系统自动启动，root权限下执行:
+
+	systemctl enable rabbitmq-server.service
+	
+查看自启动服务.
+	
+	systemctl list-unit-files
+	
+2.启动rabbitMQ服务
+
+	# 需要开起来，有些会使用后台运行的rabbitmq-server  -detached，但是这个我在关闭的时候使用way2方式关闭的时候不能关闭，所以很不方便。
+	rabbitmq-server start
+	 
+	# 停止rabbitmq
+	rabbitmq-server stop
+	 
+	# 查看rabbitmq的状态
+	rabbitmq-server status
+	
+		ERROR: distribution port 25672 in use by another node: rabbit@yinzixian
+		
+			netstat -lnp | grep 25672
+
+			kill -9 xxx
+
+		[root@host-11117 ~]# netstat -lnp | grep 25672
+		tcp        0      0 0.0.0.0:25672           0.0.0.0:*               LISTEN      2452/beam.smp
+		[root@host-1717 ~]# kill -9 2452
+
+	
+
+四、安装Web管理界面插件
+1.安装命令
+	rabbitmq-plugins enable rabbitmq_management
+2.安装成功后会显示如下内容
+	The following plugins have been enabled:
+	  mochiweb
+	  webmachine
+	  rabbitmq_web_dispatch
+	  amqp_client
+	  rabbitmq_management_agent
+	  rabbitmq_management
+	Plugin configuration has changed. Restart RabbitMQ for changes to take effect.
+
+五、设置RabbitMQ远程ip登录
+这里我们以创建个oldlu帐号，密码123456为例，创建一个账号并支持远程ip访问。
+1.创建账号
+	rabbitmqctl add_user oldlu 123456
+2.设置用户角色
+	rabbitmqctl  set_user_tags  oldlu  administrator
+3.设置用户权限
+	rabbitmqctl set_permissions -p "/" oldlu ".*" ".*" ".*"
+4.设置完成后可以查看当前用户和角色(需要开启服务)
+	rabbitmqctl list_users
+	
+浏览器输入：serverip:15672。其中serverip是RabbitMQ-Server所在主机的ip。
+
+
+
+	
