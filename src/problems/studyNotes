@@ -28,13 +28,11 @@
 
 ·HashMap多线程两个问题：死链问题，扩容数据丢失问题
 
-·线程池的作用：提高应用程序的稳定性，因为Web服务器不会在高负载情况下失败：由于服务器不会创建数千个线程来争夺有限的CPU和内存资源，因此服务器的性能将平稳降低（如果在足够长的时间内，任务到达的速率总是超过任务执行的速率，服务器仍有OOM风险，因为workQueue会不断增长，所以ThreadPoolExecutor提供了maximumPoolSize和RejectedExecutionHandler两个参数）
-
-·线程池大小设置：分析计算环境，资源预算和任务特性。比如服务器CPU核数多少?内存多大？I/O密集型还是计算密集型?是否需要JDBC这样的稀缺资源
-
-·任务被提交到已调用shutdown的Executor会执行拒绝策略
-
-·ThreadPoolExecutor可扩展，可在子类中覆写 beforeExecute（这里抛异常，任务和afterExecute都不执行），afterExecute（除非任务抛出ERROR，否则都会执行）和terminated
+·线程池：
+··线程池的作用：提高应用程序的稳定性，因为Web服务器不会在高负载情况下失败：由于服务器不会创建数千个线程来争夺有限的CPU和内存资源，因此服务器的性能将平稳降低（如果在足够长的时间内，任务到达的速率总是超过任务执行的速率，服务器仍有OOM风险，因为workQueue会不断增长，所以ThreadPoolExecutor提供了maximumPoolSize和RejectedExecutionHandler两个参数）
+··线程池大小设置：分析计算环境，资源预算和任务特性。比如服务器CPU核数多少?内存多大？I/O密集型还是计算密集型?是否需要JDBC这样的稀缺资源
+··任务被提交到已调用shutdown的Executor会执行拒绝策略
+··ThreadPoolExecutor可扩展，可在子类中覆写 beforeExecute（这里抛异常，任务和afterExecute都不执行），afterExecute（除非任务抛出ERROR，否则都会执行）和terminated
 
 ·死锁产生情况：
 ··因加锁顺序造成的死锁。解决：根据参数的hash值进行加锁（System.identityHashCode）hash值相同时先获取tieLock锁（加时锁），保证同时只有一个线程获取锁
@@ -42,5 +40,13 @@
 ····开放调用：调用某个方法时不需要持有锁，即调用方法的位置不在锁代码块里
 ··资源死锁:某些任务需要等待其他任务的结果。有界线程池与相互依赖的任务不能一起使用，例如生产者-消费者
 
-·
-
+·MySQL中的锁：
+··myisam采用表锁，innodb采用行锁（通过给索引项加锁实现，只有通过索引检索数据才会使用行锁，否则使用表锁）
+··默认情况下，表锁和行锁都是自动获得的，不需要额外的命令
+··行级锁只在存储引擎层实现，服务器层没有实现
+··锁分为共享锁和独占锁，默认情况下一个锁释放时，独占锁会优先获取锁
+··显示加锁：共享锁：select lock in share mode 独占锁：select for update
+··myisam总是一次性获取sql语句所需全部锁，所以不会死锁
+··innodb锁是一个个获取的，执行commit或rollback时会同时释放
+··innodb通过锁和MVCC实现一致性读
+··乐观锁：假设不会发生冲突，只在提交时检查是否违反数据完整性；悲观锁：假设别人会修改，拿数据的时候就加锁（MySQL中的读写锁均为悲观锁）
