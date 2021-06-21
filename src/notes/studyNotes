@@ -23,6 +23,7 @@
 ·TCP四次挥手：
 ··A发送FIN信号；
 ··B发送应答ACK信号，告诉A可以断开，需要等B处理完数据，并进入CLOSE_WAIT
+
 ··B做好连接关闭前的准备工作之后发送FIN信号；
 ··A收到信号后发送ACK信号并进入TIME_WAIT：默认2MSL => 240s,可进入/etc/sysctl.conf修改net.ipv4.tcp_fin_timeout = 30(建议小于30s)
 
@@ -45,7 +46,7 @@
 ··默认情况下，表锁和行锁都是自动获得的，不需要额外的命令
 ··行级锁只在存储引擎层实现，服务器层没有实现
 ··锁分为共享锁和独占锁，默认情况下一个锁释放时，独占锁会优先获取锁
-··显示加锁：共享锁：select lock in share mode 独占锁：select for update
+··显式加锁：共享锁：select lock in share mode 独占锁：select for update
 ··myisam总是一次性获取sql语句所需全部锁，所以不会死锁
 ··innodb锁是一个个获取的，执行commit或rollback时会同时释放
 ··innodb通过锁和MVCC实现一致性读
