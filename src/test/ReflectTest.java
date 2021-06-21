@@ -29,7 +29,7 @@ public class ReflectTest {
 			System.out.println(stuClass3 == stuClass2);// 判断三种方式是否获取的是同一个
 			try {
 				Object o1 = stuClass3.newInstance();
-				Object o2 = stuClass3.getDeclaredConstructor().newInstance();
+                stuClass3.getDeclaredConstructor().newInstance()
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
