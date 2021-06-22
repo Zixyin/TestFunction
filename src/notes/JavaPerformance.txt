@@ -1,0 +1,43 @@
+操作系统性能监控:
+    监控CPU使用率：
+        1.Windows：
+            1.1.Task Manager(任务管理器):
+            1.2.Performance Monitor(性能监视器):win + R : perfmon
+            1.3.typeperf(命令行工具):
+                1.新建配置文件 cpu-util.txt
+                    \Processor(_Total)\% Processor Time
+                    \Memory\Available MBytes
+                    \Memory\% Committed Bytes In Use
+                    \Memory\Page Faults/sec
+                    \PhysicalDisk(_Total)\% Disk Time
+                    \PhysicalDisk(_Total)\Avg. Disk Queue Length
+                    \PhysicalDisk(_Total)\Avg. Disk Bytes/Transfer
+                2.命令执行
+                    typeperf -cf C:\Users\YZX\Desktop\cpu-util.txt -si 2
+        2.Linux:
+            图形化工具:
+                GNOME System Monitor(GNOME系统监视器):
+                    启动命令 gnome-system-monitor
+            命令行监控:
+                vmstat:
+                    安装:yum install -y sysstat
+                    使用:vmstat 2(时间间隔数/s) 1(次数)
+                mpstat:
+                top:
+    监控锁竞争:
+        Linux:
+            pidstat -w  ex:pidstat -w -I -p 9391(进程id) 5(每5s)
+
+    监控网络I/O使用率:
+        Linux:
+            nicstat:    ex:nicstat -i yukonx0(网络接口设备) 1(每1s)
+
+    监控磁盘I/O使用率
+        Linux:
+            iostat:     ex:iostat -xc 5
+
+JVM概览:
+    类加载:
+        验证:
+        准备:
+        初始化:
