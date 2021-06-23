@@ -1,0 +1,7 @@
+\Processor(_Total)\% Processor Time
+\Memory\Available MBytes
+\Memory\% Committed Bytes In Use
+\Memory\Page Faults/sec
+\PhysicalDisk(_Total)\% Disk Time
+\PhysicalDisk(_Total)\Avg. Disk Queue Length
+\PhysicalDisk(_Total)\Avg. Disk Bytes/Transfer
