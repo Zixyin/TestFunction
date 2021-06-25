@@ -27,7 +27,10 @@
 ··B做好连接关闭前的准备工作之后发送FIN信号；
 ··A收到信号后发送ACK信号并进入TIME_WAIT：默认2MSL => 240s,可进入/etc/sysctl.conf修改net.ipv4.tcp_fin_timeout = 30(建议小于30s)
 
-·HashMap多线程两个问题：死链问题，扩容数据丢失问题
+·HashMap多线程两个问题：
+	死链问题:两个线程同时put，同时发生扩容，transfer方法里面使用头插法（新的链表顺序相反）会导致环形引用
+        1.8改成尾插法解决问题
+	扩容数据丢失问题
   
 ·线程池：
 ··线程池的作用：提高应用程序的稳定性，因为Web服务器不会在高负载情况下失败：由于服务器不会创建数千个线程来争夺有限的CPU和内存资源，因此服务器的性能将平稳降低（如果在足够长的时间内，任务到达的速率总是超过任务执行的速率，服务器仍有OOM风险，因为workQueue会不断增长，所以ThreadPoolExecutor提供了maximumPoolSize和RejectedExecutionHandler两个参数）
