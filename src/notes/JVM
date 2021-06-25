@@ -2,7 +2,7 @@
 	JDK(Java Development Kit):Java的核心.包括JRE,Java开发工具和Java基础类库(rt.jar)
 	JRE(Java Runtime Environment):Java运行环境.包含JVM标准实现和Java核心类库
 	JVM(Java Virtual Machine):Java运行环境
-	联系:JDK下面的jre目录有文件夹bin和lib,bin => JVM,Lib => jvm工作所需要的类库.JVM + Lib = JRE
+	联系:JDK下面的jre目录有文件夹bin和lib,bin => JVM,Lib => JVM工作所需要的类库.JVM + Lib = JRE
 	区别:JDK是开发环境,JRE是运行环境.JVM执行.class需要JRE的Lib支持,尤其是rt.jar
 	rt.jar:	rt是runtime的缩写,包含java.lang,java.util,java.io等常用包
 
@@ -95,8 +95,8 @@
 	4.子类初始化
 	5.main方法所在类（虚拟机启动时初始化）
 	
-·sychronized和volatile底层原理
-	1.sychronized:字节码前后插入monitor enter和monitor exit
+·synchronized和volatile底层原理
+	1.synchronized:字节码前后插入monitor enter和monitor exit
 	2.volatile:对volatile写操作的字节码加lock前缀,相当于内存屏障
 
 ·long和double的非原子性协定:允许虚拟机将未被volatile修饰的64位数据的读写操作划分位两次32位操作	
@@ -142,6 +142,7 @@
 		底层操作：CAS
 
 ·线程安全:当多个线程访问一个对象,如果不用考虑这些线程在运行时环境下的调度和交替执行,也不需要额外的同步和协调操作,调用这个对象的行为都能得到正确的结果,这个对象就是线程安全的
+	保证线程安全需要保证原子性，可见性，有序性
 
 ·轻量级锁:在无竞争的情况下使用CAS消除同步使用的互斥量.
     JVM尝试使用CAS更改对象头的运行时数据(Mark Word).
@@ -158,9 +159,9 @@
     G1:
     Tenured generation:
         CMS(Concurrent Mark Sweep):并发收集器.基于标记-清除算法.以获取最短停顿时间为目标
-            步骤:初始标记,并发标记,重新标记,并发清除.
-            耗时最长的并发标记和并发清除过程收集器线程可以与用户线程一起工作
-            缺点:1.CPU资源敏感(需要分出CPU资源执行收集器线程) 2.无法处理浮动垃圾 3.空间碎片
+		            步骤:初始标记,并发标记,重新标记,并发清除.
+		            耗时最长的并发标记和并发清除过程收集器线程可以与用户线程一起工作
+		            缺点:1.CPU资源敏感(需要分出CPU资源执行收集器线程) 2.无法处理浮动垃圾 3.空间碎片
         Serial Old(MSC):主要在Client模式下使用.Serial的老年代版本
         Parallel Old:Parallel Scavenge的老年代版本.
     ··除显式指出,默认收集算法为新生代:复制算法;老年代:标记整理算法

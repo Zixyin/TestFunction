@@ -22,6 +22,8 @@ public class IntegerTest {
 			System.out.println(i1 == i4); //	T
 			System.out.println(i3 == i4); //	F
 			System.out.println(i4 == i5); //	F
+			//包装类的"=="运算在遇到算数运算的情况下会自动拆箱
+			System.out.println(i4 == (i5 + 0)); //	T
 			System.out.println(i5 == i6); //	F
 			System.out.println(i6 == i7); //	F
 			System.out.println(i3.equals(i4));//T
