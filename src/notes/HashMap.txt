@@ -11,9 +11,35 @@
 
     static final int MIN_TREEIFY_CAPACITY = 64;
 
-静态Node内部类,实现自Map.Entry
+静态Node内部类,实现自Map.Entry,链表存储结构
     static class Node<K,V> implements Map.Entry<K,V>{...};
+TreeNode,红黑树存储结构
+    static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
+        TreeNode<K,V> parent;  // red-black tree links
+        TreeNode<K,V> left;
+        TreeNode<K,V> right;
+        TreeNode<K,V> prev;    // needed to unlink next upon deletion
+        boolean red;
+        TreeNode(int hash, K key, V val, Node<K,V> next) {
+            super(hash, key, val, next);
+        }
 
+        /**
+         * Returns root of tree containing this node.
+         */
+        final TreeNode<K,V> root() {
+            for (TreeNode<K,V> r = this, p;;) {
+                if ((p = r.parent) == null)
+                    return r;
+                r = p;
+            }
+        }
+
+        /**
+         * ...
+         * other function
+         */
+    }
 Map.Entry接口:
     interface Entry<K, V> {
         K getKey();
@@ -37,8 +63,15 @@ Map.Entry接口:
         }
     }
 
-6个Fields
+LinkedHashMap.Entry
+    static class Entry<K,V> extends HashMap.Node<K,V> {
+        Entry<K,V> before, after;
+        Entry(int hash, K key, V value, Node<K,V> next) {
+            super(hash, key, value, next);
+        }
+    }
 
+6个Fields
     transient Node<K,V>[] table;
 
     transient Set<Map.Entry<K,V>> entrySet;
@@ -52,15 +85,6 @@ Map.Entry接口:
     final float loadFactor;
 
 三个构造方法:
-    /**
-     * Constructs an empty {@code HashMap} with the specified initial
-     * capacity and load factor.
-     *
-     * @param  initialCapacity the initial capacity
-     * @param  loadFactor      the load factor
-     * @throws IllegalArgumentException if the initial capacity is negative
-     *         or the load factor is nonpositive
-     */
     public HashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
@@ -73,21 +97,11 @@ Map.Entry接口:
         this.loadFactor = loadFactor;
         this.threshold = tableSizeFor(initialCapacity);
     }
-   /**
-     * Constructs an empty {@code HashMap} with the specified initial
-     * capacity and the default load factor (0.75).
-     *
-     * @param  initialCapacity the initial capacity.
-     * @throws IllegalArgumentException if the initial capacity is negative.
-     */
+
     public HashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
 
-    /**
-     * Constructs an empty {@code HashMap} with the default initial capacity
-     * (16) and the default load factor (0.75).
-     */
     public HashMap() {
         this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
     }
