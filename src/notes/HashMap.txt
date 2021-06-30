@@ -1,3 +1,6 @@
+参考:https://carsonho.blog.csdn.net/article/details/79373134?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-10.baidujs&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-10.baidujs
+
+JDK版本为JDK14
 6个常量
     static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
 
@@ -34,7 +37,7 @@
                 return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> cmp.compare(c1.getValue(), c2.getValue());
             }
         }
-    Node:链表存储结构
+    Node:链表存储结构.定义四个属性,覆写Entry五个方法
         static class Node<K,V> implements Map.Entry<K,V>{
             final int hash;
             final K key;
@@ -74,14 +77,14 @@
                 return false;
             }};
 
-    LinkedHashMap.Entry
+    LinkedHashMap.Entry:在Node的基础上新增了befor和afterEntry,存储插入顺序
         static class Entry<K,V> extends HashMap.Node<K,V> {
             Entry<K,V> before, after;
             Entry(int hash, K key, V value, Node<K,V> next) {
                 super(hash, key, value, next);
             }
         }
-    TreeNode:红黑树存储结构
+    TreeNode:红黑树存储结构.
         static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
             TreeNode<K,V> parent;  // red-black tree links
             TreeNode<K,V> left;
@@ -116,6 +119,10 @@
 
     transient int size;
 
+    /**
+     * 调用了集合的add,remove方法时,modCount会改变
+     * foreach迭代前会记录modCount,如果迭代过程中改变modCount则抛出ConcurrentModificationException,即安全失败
+     */
     transient int modCount;
 
     int threshold;
@@ -144,4 +151,65 @@
         this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
     }
 
-https://carsonho.blog.csdn.net/article/details/79373134?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-10.baidujs&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-10.baidujs
+get方法:返回getNode方法返回的Node的value或者null,getNode方法参数为hash(key)和key
+    1.定义Node<K,V> e;
+    2.return (e = getNode(hash(key), key)) == null ? null : e.value;
+    3.hash():return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);k的hashCode高16位和低16位异或
+    4.getNode():
+         4.1.定义Node<K,V>[] tab;Node<K,V> first, e;
+         4.2.将first设置为tab[(n - 1) & hash]),n是tab.length;
+         4.3.对fisrt遍历,找到e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k))) 的Node e返回
+
+put方法:return putVal(hash(key), key, value, false, true);
+     * @param onlyIfAbsent if true, don't change existing value(如果为 true，则不要更改现有值)
+     * @param evict if false, the table is in creation mode.(如果为 false，则表处于创建模式。)
+    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                       boolean evict) {
+            Node<K,V>[] tab; Node<K,V> p; int n, i;
+
+            // 1.table为空,初始化table
+            if ((tab = table) == null || (n = tab.length) == 0)
+                n = (tab = resize()).length;
+            // 2.对应槽位Node为空,新增Node,直接跳到修改modCount和扩容判断(第7步)
+            if ((p = tab[i = (n - 1) & hash]) == null)
+                tab[i] = newNode(hash, key, value, null);
+            else {
+                Node<K,V> e; K k;
+                // 3.判断对应槽位第一个元素是否是对应元素,是的话直接进入值修改步骤(第6步)
+                if (p.hash == hash &&
+                    ((k = p.key) == key || (key != null && key.equals(k))))
+                    e = p;
+                // 4.判断是不是树节点,是的话进入树的putTreeVal方法,根据putTreeVal的返回值(即有没有产生新节点)决定进入第6步or第7步,因为TreeNode是Node的派生类,故可用Node接收
+                else if (p instanceof TreeNode)
+                    e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+                else {
+                    // 5.进行链表遍历,遍历不到则新增元素,并进行扩容判断(扩容 or 进化),此时e为null,进入修改modCount和扩容判断步骤(第7步)
+                    for (int binCount = 0; ; ++binCount) {
+                        if ((e = p.next) == null) {
+                            p.next = newNode(hash, key, value, null);
+                            if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                                treeifyBin(tab, hash);
+                            break;
+                        }
+                        if (e.hash == hash &&
+                            ((k = e.key) == key || (key != null && key.equals(k))))
+                            break;
+                        p = e;
+                    }
+                }
+                // 6.值修改,不涉及新增元素,直接返回旧值
+                if (e != null) { // existing mapping for key
+                    V oldValue = e.value;
+                    if (!onlyIfAbsent || oldValue == null)
+                        e.value = value;
+                    afterNodeAccess(e);
+                    return oldValue;
+                }
+            }
+            // 7.修改modCount,判断新增元素后size是否大于阈值,大于则扩容
+            ++modCount;
+            if (++size > threshold)
+                resize();
+            afterNodeInsertion(evict);
+            return null;
+        }
