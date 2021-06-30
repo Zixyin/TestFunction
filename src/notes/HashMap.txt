@@ -8,68 +8,106 @@
     static final int TREEIFY_THRESHOLD = 8;
 
     static final int UNTREEIFY_THRESHOLD = 6;
-
+        
     static final int MIN_TREEIFY_CAPACITY = 64;
 
-静态Node内部类,实现自Map.Entry,链表存储结构
-    static class Node<K,V> implements Map.Entry<K,V>{...};
-TreeNode,红黑树存储结构
-    static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
-        TreeNode<K,V> parent;  // red-black tree links
-        TreeNode<K,V> left;
-        TreeNode<K,V> right;
-        TreeNode<K,V> prev;    // needed to unlink next upon deletion
-        boolean red;
-        TreeNode(int hash, K key, V val, Node<K,V> next) {
-            super(hash, key, val, next);
-        }
-
-        /**
-         * Returns root of tree containing this node.
-         */
-        final TreeNode<K,V> root() {
-            for (TreeNode<K,V> r = this, p;;) {
-                if ((p = r.parent) == null)
-                    return r;
-                r = p;
+内部存储结构:Map.Entry -> HashMap.Node -> LinkedHashMap.Entry -> HashMap.TreeNode
+    Map.Entry:
+        interface Entry<K, V> {
+            K getKey();
+            V getValue();
+            V setValue(V value);
+            boolean equals(Object o);
+            int hashCode();
+            public static <K extends Comparable<? super K>, V> Comparator<Map.Entry<K, V>> comparingByKey() {
+                    return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> c1.getKey().compareTo(c2.getKey());
+            }
+             public static <K, V extends Comparable<? super V>> Comparator<Map.Entry<K, V>> comparingByValue() {
+                return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> c1.getValue().compareTo(c2.getValue());
+             }
+             public static <K, V> Comparator<Map.Entry<K, V>> comparingByKey(Comparator<? super K> cmp) {
+                 Objects.requireNonNull(cmp);
+                 return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> cmp.compare(c1.getKey(), c2.getKey());
+             }
+            public static <K, V> Comparator<Map.Entry<K, V>> comparingByValue(Comparator<? super V> cmp) {
+                Objects.requireNonNull(cmp);
+                return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> cmp.compare(c1.getValue(), c2.getValue());
             }
         }
+    Node:链表存储结构
+        static class Node<K,V> implements Map.Entry<K,V>{
+            final int hash;
+            final K key;
+            V value;
+            Node<K,V> next;
 
-        /**
-         * ...
-         * other function
-         */
-    }
-Map.Entry接口:
-    interface Entry<K, V> {
-        K getKey();
-        V getValue();
-        V setValue(V value);
-        boolean equals(Object o);
-        int hashCode();
-        public static <K extends Comparable<? super K>, V> Comparator<Map.Entry<K, V>> comparingByKey() {
-                return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> c1.getKey().compareTo(c2.getKey());
-        }
-         public static <K, V extends Comparable<? super V>> Comparator<Map.Entry<K, V>> comparingByValue() {
-            return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> c1.getValue().compareTo(c2.getValue());
-         }
-         public static <K, V> Comparator<Map.Entry<K, V>> comparingByKey(Comparator<? super K> cmp) {
-             Objects.requireNonNull(cmp);
-             return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> cmp.compare(c1.getKey(), c2.getKey());
-         }
-        public static <K, V> Comparator<Map.Entry<K, V>> comparingByValue(Comparator<? super V> cmp) {
-            Objects.requireNonNull(cmp);
-            return (Comparator<Map.Entry<K, V>> & Serializable)(c1, c2) -> cmp.compare(c1.getValue(), c2.getValue());
-        }
-    }
+            Node(int hash, K key, V value, Node<K,V> next) {
+                this.hash = hash;
+                this.key = key;
+                this.value = value;
+                this.next = next;
+            }
 
-LinkedHashMap.Entry
-    static class Entry<K,V> extends HashMap.Node<K,V> {
-        Entry<K,V> before, after;
-        Entry(int hash, K key, V value, Node<K,V> next) {
-            super(hash, key, value, next);
+            public final K getKey()        { return key; }
+            public final V getValue()      { return value; }
+            public final String toString() { return key + "=" + value; }
+
+            public final int hashCode() {
+                return Objects.hashCode(key) ^ Objects.hashCode(value);
+            }
+
+            public final V setValue(V newValue) {
+                V oldValue = value;
+                value = newValue;
+                return oldValue;
+            }
+
+            public final boolean equals(Object o) {
+                if (o == this)
+                    return true;
+                if (o instanceof Map.Entry) {
+                    Map.Entry<?,?> e = (Map.Entry<?,?>)o;
+                    if (Objects.equals(key, e.getKey()) &&
+                        Objects.equals(value, e.getValue()))
+                        return true;
+                }
+                return false;
+            }};
+
+    LinkedHashMap.Entry
+        static class Entry<K,V> extends HashMap.Node<K,V> {
+            Entry<K,V> before, after;
+            Entry(int hash, K key, V value, Node<K,V> next) {
+                super(hash, key, value, next);
+            }
         }
-    }
+    TreeNode:红黑树存储结构
+        static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
+            TreeNode<K,V> parent;  // red-black tree links
+            TreeNode<K,V> left;
+            TreeNode<K,V> right;
+            TreeNode<K,V> prev;    // needed to unlink next upon deletion
+            boolean red;
+            TreeNode(int hash, K key, V val, Node<K,V> next) {
+                super(hash, key, val, next);
+            }
+
+            /**
+             * Returns root of tree containing this node.
+             */
+            final TreeNode<K,V> root() {
+                for (TreeNode<K,V> r = this, p;;) {
+                    if ((p = r.parent) == null)
+                        return r;
+                    r = p;
+                }
+            }
+
+            /**
+             * ...
+             * other function
+             */
+        }
 
 6个Fields
     transient Node<K,V>[] table;
